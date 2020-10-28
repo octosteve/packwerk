@@ -170,14 +170,15 @@ module Packwerk
     def check_inflection_file
       inflections_file = @configuration.inflections_file
 
-      test_inflections = ActiveSupport::Inflector::Inflections.new
+      application_inflections = ActiveSupport::Inflector::Inflections.new
+      Packwerk::Inflections::Default.apply_to(application_inflections)
+      Packwerk::Inflections::Custom.new(inflections_file).apply_to(application_inflections)
 
-      Packwerk::Inflections::Default.apply_to(test_inflections)
-      Packwerk::Inflections::Custom.new(inflections_file).apply_to(test_inflections)
+      packwerk_inflections = Packwerk::Inflector.from_file(inflections_file)
 
       results = %i(plurals singulars uncountables humans acronyms).map do |type|
-        expected = ActiveSupport::Inflector.inflections.public_send(type).to_set
-        actual = test_inflections.public_send(type).to_set
+        expected = application_inflections.public_send(type).to_set
+        actual = packwerk_inflections.inflections.public_send(type).to_set
 
         if expected == actual
           Result.new(true)

@@ -8,7 +8,7 @@ require "packwerk/inflector"
 module Packwerk
   class InflectorTest < Minitest::Test
     def setup
-      @inflector = Inflector.new
+      @inflector = inflector_for(file: "config/inflections.yml")
     end
 
     test "acts like activesupport inflector" do
@@ -39,32 +39,25 @@ module Packwerk
       assert_equal "thing", @inflector.pluralize("things", 1)
     end
 
-    test "#apply_inflections will apply any custom inflections from file" do
-      file = "./test/fixtures/skeleton/custom_inflections.yml"
-      custom_inflector = custom_inflector_for(file)
+    test "#initialize will apply custom inflections from file" do
+      inflector = inflector_for(file: "./test/fixtures/skeleton/custom_inflections.yml")
 
-      expected_inflections = {
-        "acronym" => ["GraphQL", "MRuby", "TOS"],
-        "irregular" => [["analysis", "analyses"], ["reserve", "reserves"]],
-        "uncountable" => ["payment_details"],
-      }
-
-      assert_equal custom_inflector.inflections, expected_inflections
+      assert_equal "graphql", inflector.underscore("GraphQL")
+      assert_equal "payment_details", inflector.singularize("payment_details")
     end
 
-    test "#apply_inflections will not apply any custom inflections if there aren't any" do
-      file = "no_inflections_here.yml"
-      custom_inflector = custom_inflector_for(file)
+    test "#initialize will not apply custom inflections if there aren't any" do
+      inflector = inflector_for(file: "no_inflections_here.yml")
 
-      assert_empty custom_inflector.inflections
+      assert_equal "graph_ql", inflector.underscore("GraphQL")
+      assert_equal "payment_detail", inflector.singularize("payment_details")
     end
 
     private
 
-    def custom_inflector_for(file)
+    def inflector_for(file:)
       custom_inflector = Packwerk::Inflections::Custom.new(file)
-      Inflector.new(custom_inflector: custom_inflector).apply_all_inflections
-      custom_inflector
+      Inflector.new(custom_inflector: custom_inflector)
     end
   end
 end

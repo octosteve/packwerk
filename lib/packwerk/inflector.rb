@@ -28,17 +28,11 @@ module Packwerk
         custom_inflector: Inflections::Custom
       ).void
     end
-    def initialize(custom_inflector: Inflections::Custom.new)
-      @custom_inflector = custom_inflector
-      @default_inflector = Inflections::Default
+    def initialize(custom_inflector:)
       @inflections = ::ActiveSupport::Inflector::Inflections.new
 
-      apply_all_inflections
-    end
-
-    def apply_all_inflections
-      @default_inflector.apply_to(@inflections)
-      @custom_inflector.apply_to(@inflections)
+      Inflections::Default.apply_to(@inflections)
+      custom_inflector.apply_to(@inflections)
     end
 
     def pluralize(word, count = nil)
