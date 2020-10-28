@@ -39,24 +39,6 @@ module Packwerk
       refute result.ok?, result.error_value
     end
 
-    test "returns error for mismatched inflections.yml file" do
-      config_path = "test/fixtures/skeleton/packwerk.yml"
-      configs = YAML.load_file(config_path)
-      configs["inflections_file"] = "custom_inflections.yml"
-
-      configuration = Packwerk::Configuration.new(configs, config_path: config_path)
-
-      application_validator = Packwerk::ApplicationValidator.new(
-        config_file_path: configuration.config_path,
-        application_load_paths: configuration.all_application_autoload_paths,
-        configuration: configuration
-      )
-
-      result = application_validator.check_all
-
-      refute(result.ok?, result.error_value)
-    end
-
     test "works for custom inflections file with inflections matching ActiveSupport" do
       inflections = ActiveSupport::Inflector.inflections.deep_dup
       Packwerk::Inflections::Custom.new(
@@ -67,7 +49,6 @@ module Packwerk
 
       config_path = "test/fixtures/skeleton/packwerk.yml"
       configs = YAML.load_file(config_path)
-      configs["inflections_file"] = "custom_inflections.yml"
 
       configuration = Packwerk::Configuration.new(configs, config_path: config_path)
 
