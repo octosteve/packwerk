@@ -8,6 +8,7 @@ require "packwerk/association_inspector"
 require "packwerk/checking_deprecated_references"
 require "packwerk/constant_discovery"
 require "packwerk/const_node_inspector"
+require "packwerk/fixture_reference_inspector"
 require "packwerk/dependency_checker"
 require "packwerk/file_processor"
 require "packwerk/node_processor"
@@ -79,6 +80,7 @@ module Packwerk
       @constant_name_inspectors = [
         ::Packwerk::ConstNodeInspector.new,
         ::Packwerk::AssociationInspector.new(inflector: inflector, custom_associations: custom_associations),
+        ::Packwerk::FixtureReferenceInspector.new(root_path: root_path),
       ]
 
       @node_processor_class = node_processor_class
