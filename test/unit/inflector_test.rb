@@ -38,5 +38,33 @@ module Packwerk
       assert_equal "thing", @inflector.pluralize("thing", 1)
       assert_equal "thing", @inflector.pluralize("things", 1)
     end
+
+    test "#apply_inflections will apply any custom inflections from file" do
+      file = "./test/fixtures/skeleton/custom_inflections.yml"
+      custom_inflector = custom_inflector_for(file)
+
+      expected_inflections = {
+        "acronym" => ["GraphQL", "MRuby", "TOS"],
+        "irregular" => [["analysis", "analyses"], ["reserve", "reserves"]],
+        "uncountable" => ["payment_details"],
+      }
+
+      assert_equal custom_inflector.inflections, expected_inflections
+    end
+
+    test "#apply_inflections will not apply any custom inflections if there aren't any" do
+      file = "no_inflections_here.yml"
+      custom_inflector = custom_inflector_for(file)
+
+      assert_empty custom_inflector.inflections
+    end
+
+    private
+
+    def custom_inflector_for(file)
+      custom_inflector = Packwerk::Inflections::Custom.new(file)
+      Inflector.new(custom_inflector: custom_inflector).apply_all_inflections
+      custom_inflector
+    end
   end
 end
