@@ -11,7 +11,7 @@ module Packwerk
       extend T::Sig
 
       def default
-        @default ||= new
+        @default ||= new(custom_inflector: Inflections::Custom.new)
       end
 
       sig { params(inflections_file: String).returns(::Packwerk::Inflector) }

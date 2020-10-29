@@ -16,7 +16,10 @@ module Packwerk
       has_and_belongs_to_many
     ).to_set
 
-    def initialize(inflector: Inflector.new, custom_associations: Set.new)
+    def initialize(
+      inflector: Inflector.new(custom_inflector: Inflections::Custom.new),
+      custom_associations: Set.new
+    )
       @inflector = inflector
       @associations = RAILS_ASSOCIATIONS + custom_associations
     end
